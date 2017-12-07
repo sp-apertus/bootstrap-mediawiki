@@ -4,7 +4,9 @@
  *
  * @Version 1.0.0
  * @Author Matthew Batchelder <borkweb@gmail.com>
+ * @Author Creative Commons Corporation <info@creativecommons.org>
  * @Copyright Matthew Batchelder 2012 - http://borkweb.com/
+ * @Copyright Creative Commons Corporation 2015 - https://github.com/creativecommons/bootstrap-mediawiki
  * @License: GPLv2 (http://www.gnu.org/copyleft/gpl.html)
  */
 
@@ -64,7 +66,7 @@ class BootstrapMediaWikiTemplate extends QuickTemplate {
 	/**
 	 * @var Cached skin object
 	 */
-	public $skin;
+	//public $skin;
 
 	/**
 	 * Template filter callback for Bootstrap skin.
@@ -82,7 +84,7 @@ class BootstrapMediaWikiTemplate extends QuickTemplate {
 		global $wgNavBarClasses;
 		global $wgSubnavBarClasses;
 
-		$this->skin = $this->data['skin'];
+		//$this->skin = $this->data['skin'];
 		$action = $wgRequest->getText( 'action' );
 		$url_prefix = str_replace( '$1', '', $wgArticlePath );
 
@@ -125,8 +127,7 @@ class BootstrapMediaWikiTemplate extends QuickTemplate {
 					if ( $wgUser->isLoggedIn() ) {
 						if ( count( $this->data['personal_urls'] ) > 0 ) {
 							$user_icon = '<span class="user-icon"><img src="https://secure.gravatar.com/avatar/'.md5(strtolower( $wgUser->getEmail())).'.jpg?s=20&r=g"/></span>';
-							$name = strtolower( $wgUser->getName() );
-							$user_nav = $this->get_array_links( $this->data['personal_urls'], $user_icon . $name, 'user' );
+							$user_nav = $this->get_array_links( $this->data['personal_urls'], $user_icon . $wgUser->getName(), 'user' );
 							?>
 							<ul<?php $this->html('userlangattributes') ?> class="nav navbar-nav navbar-right">
 								<?php echo $user_nav; ?>
@@ -144,7 +145,7 @@ class BootstrapMediaWikiTemplate extends QuickTemplate {
 						?>
 						<ul class="nav navbar-nav navbar-right">
 							<li>
-							<?php echo Linker::linkKnown( SpecialPage::getTitleFor( 'Userlogin' ), wfMsg( 'login' ) ); ?>
+							<?php echo Linker::linkKnown( SpecialPage::getTitleFor( 'Userlogin' ), wfMessage( 'login' ), array(/*"title" => wfMessage( 'login' )*/), array("returnto" => trim($_GET['title']))); ?>
 							</li>
 						</ul>
 						<?php
@@ -160,7 +161,8 @@ class BootstrapMediaWikiTemplate extends QuickTemplate {
 				</div>
 		</div><!-- topbar -->
 		<?php
-		if( $subnav_links = $this->get_page_links('Bootstrap:Subnav') ) {
+		$subnav_links = $this->get_page_links('Bootstrap:Subnav');
+		if( $subnav_links ) {
 			?>
 			<div class="subnav subnav-fixed">
 				<div class="container">
@@ -188,7 +190,7 @@ class BootstrapMediaWikiTemplate extends QuickTemplate {
 		<div id="wiki-outer-body">
 			<div id="wiki-body" class="container">
 				<?php
-					if ( 'sidebar' == $wgTOCLocation ) {
+					if ($wgTOCLocation ==  "sidebar") {
 						?>
 						<div class="row">
 							<section class="col-md-3 toc-sidebar"></section>
@@ -241,12 +243,19 @@ class BootstrapMediaWikiTemplate extends QuickTemplate {
 		</div>
 		<div class="bottom">
 			<div class="container">
-				<?php $this->includePage('Bootstrap:Footer'); ?>
-				<footer>
-					<p>&copy; <?php echo date('Y'); ?> by <a href="<?php echo (isset($wgCopyrightLink) ? $wgCopyrightLink : 'http://borkweb.com'); ?>"><?php echo (isset($wgCopyright) ? $wgCopyright : 'BorkWeb'); ?></a> 
-						&bull; Powered by <a href="http://mediawiki.org">MediaWiki</a> 
-					</p>
-				</footer>
+			<?php $this->includePage('Bootstrap:Footer'); ?>
+			  <footer>
+			  <hr />
+			  <div class="row">
+				<div class="col-md-6">
+					This wiki is licensed to the public under a <a class="external" rel="nofollow" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0</a> license.<br><br>
+					<?php echo $this->data['lastmod']; ?>
+				</div>
+				<div class="col-md-6">
+					Theme based on <a href="https://github.com/borkweb/bootstrap-mediawiki">bootstrap-mediawiki</a> by BorkWeb.<br><br><a href="https://creativecommons.org/licenses/by/4.0/"><img src="https://licensebuttons.net/l/by/4.0/88x31.png" alt="Creative Commons Attribution 4.0" width="88" height="31"></a>&nbsp;<a href="//www.mediawiki.org/"><img src="/resources/assets/poweredby_mediawiki_88x31.png" alt="Powered by MediaWiki" srcset="/resources/assets/poweredby_mediawiki_132x47.png 1.5x, /resources/assets/poweredby_mediawiki_176x62.png 2x" width="88" height="31">
+				</div>
+			  </div>
+			  </footer>
 			</div><!-- container -->
 		</div><!-- bottom -->
 
@@ -343,6 +352,9 @@ class BootstrapMediaWikiTemplate extends QuickTemplate {
 
 	private function get_page_links( $source ) {
 		$titleBar = $this->getPageRawText( $source );
+		/*echo "<pre>";
+		print_r($titleBar);
+		echo "</pre>";*/
 		$nav = array();
 		foreach(explode("\n", $titleBar) as $line) {
 			if(trim($line) == '') continue;
@@ -406,7 +418,7 @@ class BootstrapMediaWikiTemplate extends QuickTemplate {
 				$nav[] = $item;
 			}//end else
 		}
-
+		//print_r($nav);
 		return $nav;	
 	}//end get_page_links
 
@@ -464,9 +476,9 @@ class BootstrapMediaWikiTemplate extends QuickTemplate {
 		} else {
 			$article = new Article($pageTitle);
 			$wgParserOptions = new ParserOptions($wgUser);
-			// get the text as static wiki text, but with already expanded templates,
-			// which also e.g. to use {{#dpl}} (DPL third party extension) for dynamic menus.
-			$parserOutput = $wgParser->preprocess($article->getRawText(), $pageTitle, $wgParserOptions );
+			$revision = $article->getRevision();
+			$content = $revision->getContent( Revision::RAW );
+			$parserOutput = $wgParser->preprocess($content->mText, $pageTitle, $wgParserOptions );
 			return $parserOutput;
 		}
 	}
@@ -479,7 +491,9 @@ class BootstrapMediaWikiTemplate extends QuickTemplate {
 		} else {
 			$article = new Article($pageTitle);
 			$wgParserOptions = new ParserOptions($wgUser);
-			$parserOutput = $wgParser->parse($article->getRawText(), $pageTitle, $wgParserOptions);
+			$revision = $article->getRevision();
+			$content = $revision->getContent( Revision::RAW );
+			$parserOutput = $wgParser->parse($content->mText, $pageTitle, $wgParserOptions);
 			echo $parserOutput->getText();
 		}
 	}

@@ -1,3 +1,10 @@
+a {
+  color: #fa8756;
+  text-decoration: none;
+}
+a:hover {
+  color: #474747;
+}
 body {
 	background-color: #fff;
 	background-image: url(images/wiki-bg.jpg);
@@ -27,11 +34,47 @@ textarea {
 	text-shadow: 1px 1px 0 rgb(255,255,255);
 }
 
+
+h1 {
+    font-size: 24pt;
+}
+
+h2 {
+    font-size: 20pt;
+}
+
+h3 {
+    font-size: 18pt;
+    border-bottom: 1px dotted #ddd;
+}
+
+h4 {
+    font-size: 16pt;
+    border-bottom: 1px dotted #ddd;
+}
+
+h5 {
+    font-size: 12pt;
+    border-bottom: 1px dotted #ddd;
+}
+
+h6 {
+    font-size: 10pt;
+    border-bottom: 1px dotted #ddd;
+}
+
+h1, h2, h3, h4, h5, h6 {
+color: #474747;
+}
+
+
+/*
 h2 .mw-headline { font-size: 18px; }
 h3 .mw-headline { font-size: 16px; }
 h4 .mw-headline { font-size: 14px; }
 h5 .mw-headline { font-size: 12px; }
 h6 .mw-headline { font-size: 12px; }
+*/
 
 p {
 	margin-bottom: 15px;
@@ -125,7 +168,7 @@ option.unclickable {
 	width: 20px;
 	height: 20px;
 }
-
+/*
 #wiki-body h2 {
 	border-bottom: 1px solid #ddd;
 	margin-bottom: 0.5em;
@@ -135,7 +178,17 @@ option.unclickable {
 	border-bottom: 1px dotted #eee;
 	color: #555;
 	margin-bottom: 0.5em;
+}*/
+#toc {
+	display: inline-block;
+	padding: 12px;
 }
+#toc ul {
+	list-style-type: none;
+	list-style-image: none;
+	margin-left: 0;
+	padding: 0;
+ }
 
 #wiki-body li {
 	margin-bottom: 5px;
@@ -162,6 +215,7 @@ option.unclickable {
 	overflow: scroll;
 	overflow-y: scroll;
 	right: 0;
+	white-space: nowrap;
 }
 #page-contents .dropdown-menu {
 }
@@ -175,7 +229,7 @@ option.unclickable {
 }
 
 #toc:not(.toc-sidebar) {
-	display: none;
+	/*display: none;*/
 	float: right;
 	margin: 0 0 1em 1em;
 }
@@ -769,4 +823,8 @@ table.list th {
 
 .list tbody > tr:nth-child(odd) > td {
   background-color: #f9f9f9;
+}
+
+axiom-beta-console {
+	color:#1ba400;
 }
